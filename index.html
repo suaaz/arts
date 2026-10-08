@@ -38,7 +38,7 @@
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
-            Stories
+            <span>Stories</span>
           </button>
           <button class="view-btn" data-view="grid" title="Exhibition Wall">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -47,7 +47,8 @@
               <rect x="14" y="14" width="7" height="7"></rect>
               <rect x="3" y="14" width="7" height="7"></rect>
             </svg>
-            Wall (100+)
+            <span class="view-text-desktop">Wall (100+)</span>
+            <span class="view-text-mobile">Wall</span>
           </button>
         </div>
       </div>
@@ -145,7 +146,10 @@
       </div>
       <div class="lightbox-controls">
         <button id="lightboxZoomToggle" class="lightbox-btn" title="Toggle zoom level">Zoom 2x</button>
-        <a id="lightboxFullResLink" class="lightbox-btn" href="#" target="_blank" rel="noopener noreferrer" title="Open uncompressed high-resolution scan in new tab">Full HD Scan &nearr;</a>
+        <a id="lightboxFullResLink" class="lightbox-btn" href="#" target="_blank" rel="noopener noreferrer" title="Open uncompressed high-resolution scan in new tab">
+          <span class="btn-text-full">Full HD Scan &nearr;</span>
+          <span class="btn-text-short">HD &nearr;</span>
+        </a>
         <button id="lightboxClose" class="lightbox-close-btn" title="Close (ESC)" aria-label="Close inspector">&times;</button>
       </div>
     </div>

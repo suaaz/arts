@@ -526,6 +526,46 @@ document.addEventListener("DOMContentLoaded", () => {
           closeLightbox();
         }
       });
+
+      // Mobile Touch Swipe Navigation (left/right swipe)
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+
+      lightboxModal.addEventListener(
+        "touchstart",
+        (e) => {
+          if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+          }
+        },
+        { passive: true }
+      );
+
+      lightboxModal.addEventListener(
+        "touchend",
+        (e) => {
+          if (e.changedTouches.length === 1) {
+            touchEndX = e.changedTouches[0].clientX;
+            touchEndY = e.changedTouches[0].clientY;
+            // Only trigger swipe navigation if user is not zoomed into painting
+            if (zoomLevel === 1) {
+              const diffX = touchEndX - touchStartX;
+              const diffY = touchEndY - touchStartY;
+              if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                if (diffX < 0) {
+                  nextLightbox();
+                } else {
+                  prevLightbox();
+                }
+              }
+            }
+          }
+        },
+        { passive: true }
+      );
     }
 
     // Keyboard navigation
