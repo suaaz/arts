@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARTs — Masterpieces & Their Stories</title>
+  <meta name="description" content="A curated minimalist anthology of 100+ of the world's most famous paintings, the stories behind their creation, artist portraits, historical references, and museum provenance." />
+  
+  <!-- Typography: Classic Serif paired with Clean Sans-Serif -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+  
+  <!-- Minimalist Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Subtle Reading Progress Bar -->
+  <div class="progress-bar-container" aria-hidden="true">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Header & Navigation -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand-area">
+        <a href="#top" class="site-title">ARTs</a>
+        <span class="site-subtitle">An Anthology of Masterpieces</span>
+      </div>
+
+      <div class="header-controls">
+        <span class="collection-counter" id="collectionCounter">108 Masterpieces</span>
+        <div class="view-toggle" role="group" aria-label="View switcher">
+          <button class="view-btn active" data-view="stream" title="Story Walkthrough">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+            Stories
+          </button>
+          <button class="view-btn" data-view="grid" title="Exhibition Wall">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Wall (100+)
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="top">
+    <!-- Hero / Editorial Lead -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-content">
+          <span class="curatorial-label">Curatorial Anthology</span>
+          <h1 class="hero-headline">The Canvas, The Master & The History Behind It</h1>
+          <p class="hero-description">
+            A comprehensive, minimalist collection of 108 universally celebrated paintings. Behind every iconic canvas lies an intimate human struggle, a technical breakthrough, or an era-defining historical upheaval. Explore each painting in high definition alongside its authentic genesis and artist portrait.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toolbar: Search & Era Filtering -->
+    <section class="toolbar-section">
+      <div class="container toolbar-inner">
+        <!-- Live Search -->
+        <div class="search-box">
+          <input 
+            type="search" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Search across 108 paintings, artists, years, or history..." 
+            autocomplete="off"
+            aria-label="Search artworks"
+          />
+          <button id="searchClear" class="search-clear" title="Clear search" aria-label="Clear search">&times;</button>
+        </div>
+
+        <!-- Era Filters -->
+        <div class="era-filters" role="group" aria-label="Filter by art era">
+          <button class="filter-btn active" data-filter="all">All (108)</button>
+          <button class="filter-btn" data-filter="Renaissance">Renaissance</button>
+          <button class="filter-btn" data-filter="Baroque">Baroque & Golden Age</button>
+          <button class="filter-btn" data-filter="Rococo">Rococo & Classicism</button>
+          <button class="filter-btn" data-filter="Romanticism">Romanticism</button>
+          <button class="filter-btn" data-filter="Realism">Realism</button>
+          <button class="filter-btn" data-filter="Impressionism">Impressionism</button>
+          <button class="filter-btn" data-filter="Post-Impressionism">Post-Impressionism</button>
+          <button class="filter-btn" data-filter="Modern">Modernism</button>
+          <button class="filter-btn" data-filter="Edo">Edo Period</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Exhibition Content -->
+    <section class="container">
+      <!-- Story Stream / Monograph View -->
+      <div id="exhibitionStream" class="exhibition-stream">
+        <!-- Injected dynamically via app.js -->
+      </div>
+
+      <!-- Load More Controls (for Story Stream) -->
+      <div id="loadMoreContainer" class="load-more-container">
+        <span id="streamStatusText" class="stream-status-text">Displaying 12 of 108 Masterpieces</span>
+        <div class="load-more-buttons">
+          <button id="loadMoreBtn" class="load-more-btn">
+            Load Next 12 Works &darr;
+          </button>
+          <button id="loadAllBtn" class="load-all-btn">
+            Show All 108 Works
+          </button>
+        </div>
+      </div>
+
+      <!-- Gallery Grid View (Displays entire collection) -->
+      <div id="galleryGrid" class="gallery-grid">
+        <!-- Injected dynamically via app.js -->
+      </div>
+
+      <!-- Empty / No Results State -->
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon">&#9633;</div>
+        <h2 class="empty-title">No Masterpieces Found</h2>
+        <p class="empty-text">No paintings match your current search or filter criteria. Try adjusting your query or resetting filters.</p>
+        <button id="resetSearchBtn" class="reset-search-btn">Reset All Filters</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Minimalist Lightbox Modal with High-Definition Zoom -->
+  <div id="lightboxModal" class="lightbox-modal" role="dialog" aria-modal="true" aria-label="High-Definition Artwork Inspector">
+    <div class="lightbox-header">
+      <div class="lightbox-title-box">
+        <h3 id="lightboxTitle" class="lightbox-title">Artwork Title</h3>
+        <span id="lightboxCaption" class="lightbox-caption">Artist, Year & Provenance</span>
+      </div>
+      <div class="lightbox-controls">
+        <button id="lightboxZoomToggle" class="lightbox-btn" title="Toggle zoom level">Zoom 2x</button>
+        <a id="lightboxFullResLink" class="lightbox-btn" href="#" target="_blank" rel="noopener noreferrer" title="Open uncompressed high-resolution scan in new tab">Full HD Scan &nearr;</a>
+        <button id="lightboxClose" class="lightbox-close-btn" title="Close (ESC)" aria-label="Close inspector">&times;</button>
+      </div>
+    </div>
+    
+    <div class="lightbox-body">
+      <button id="lightboxPrev" class="lightbox-nav-btn lightbox-prev" title="Previous artwork (&larr;)" aria-label="Previous artwork">&#8592;</button>
+      <div class="lightbox-image-container">
+        <img id="lightboxImg" class="lightbox-image" src="" alt="Masterpiece" />
+      </div>
+      <button id="lightboxNext" class="lightbox-nav-btn lightbox-next" title="Next artwork (&rarr;)" aria-label="Next artwork">&#8594;</button>
+    </div>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button id="backToTop" class="back-to-top" title="Back to top" aria-label="Back to top">
+    &#8593;
+  </button>
+
+  <!-- Minimalist Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-col-main">
+        <div class="footer-brand">ARTs</div>
+        <p class="footer-quote">
+          &ldquo;Every artist dips his brush in his own soul, and paints his own nature into his pictures.&rdquo; &mdash; Henry Ward Beecher
+        </p>
+      </div>
+      <div class="footer-meta">
+        <span>Curated Anthology of 108 Global Masterpieces</span>
+        <span>High-Definition Educational Public Archive</span>
+        <span>Minimalist White Edition</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/artworks.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
