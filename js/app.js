@@ -115,6 +115,54 @@ document.addEventListener("DOMContentLoaded", () => {
       composer: "Frédéric Chopin",
       year: "1832",
       url: "https://archive.org/download/Chopin-NocturneOp.9No.2/20120420_Chopin_Nocturne_op9-2_amplified.mp3"
+    },
+    {
+      title: "Canon in D",
+      composer: "Johann Pachelbel",
+      year: "1698",
+      url: "https://archive.org/download/100ClassicalMusicMasterpieces/1698%20Pachelbel%20%2C%20Canon%20in%20D.mp3"
+    },
+    {
+      title: "Air on the G String (Orchestral Suite No. 3)",
+      composer: "Johann Sebastian Bach",
+      year: "1727",
+      url: "https://archive.org/download/100ClassicalMusicMasterpieces/1727%20Bach%20%2C%20Air%20%28from%20Orchestral%20Suite%20No.%203%20in%20D%29.mp3"
+    },
+    {
+      title: "Adagio in G minor",
+      composer: "Tomaso Albinoni",
+      year: "1730",
+      url: "https://archive.org/download/100ClassicalMusicMasterpieces/1730%20Albinoni%20%2C%20Adagio.mp3"
+    },
+    {
+      title: "Dance of the Blessed Spirits",
+      composer: "Christoph Willibald Gluck",
+      year: "1762",
+      url: "https://archive.org/download/100ClassicalMusicMasterpieces/1762%20Gluck%20%2C%20Dance%20of%20the%20Blessed%20Spirtis%20%28from%20%27Orpheus%20and%20Eurydice%27%29.mp3"
+    },
+    {
+      title: "Largo (from 'Xerxes')",
+      composer: "George Frideric Handel",
+      year: "1734",
+      url: "https://archive.org/download/100ClassicalMusicMasterpieces/1734%20Handel%20%2C%20Largo%20%28from%20%27Xerxes%27%29.mp3"
+    },
+    {
+      title: "Piano Concerto No. 21 — Andante ('Elvira Madigan')",
+      composer: "Wolfgang Amadeus Mozart",
+      year: "1785",
+      url: "https://archive.org/download/100ClassicalMusicMasterpieces/1785%20Piano%20Concerto%20No.%2021%20in%20C%2C%202nd%20movement%20%28%27Elvira%20Madigan%27%29.mp3"
+    },
+    {
+      title: "The Four Seasons — Spring",
+      composer: "Antonio Vivaldi",
+      year: "1725",
+      url: "https://archive.org/download/100ClassicalMusicMasterpieces/1725%20Vivaldi%20%2C%20The%20Four%20Seasons%20-%20Spring.mp3"
+    },
+    {
+      title: "Brandenburg Concerto No. 3 — Allegro",
+      composer: "Johann Sebastian Bach",
+      year: "1721",
+      url: "https://archive.org/download/100ClassicalMusicMasterpieces/1721%20Bach%20%2C%20Brandenburg%20Concerto%20No.%203%2C%201st%20movement.mp3"
     }
   ];
 
