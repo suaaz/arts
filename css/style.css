@@ -1559,6 +1559,690 @@ body {
 }
 
 /* ==========================================================================
+   Classical Background Tune Widget
+   ========================================================================== */
+.audio-widget {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.audio-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.audio-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  background: var(--bg-subtle);
+}
+
+.audio-btn.playing {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: #FFFFFF;
+}
+
+.audio-btn.playing .audio-speaker-icon,
+.audio-btn.playing .audio-muted-icon {
+  display: none !important;
+}
+
+.audio-waves {
+  display: none;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.audio-btn.playing .audio-waves {
+  display: inline-flex;
+}
+
+.wave-bar {
+  width: 2px;
+  height: 100%;
+  background: #FFFFFF;
+  border-radius: 1px;
+  animation: audioWave 1.2s ease-in-out infinite alternate;
+}
+
+.wave-bar.bar-1 { animation-delay: 0.1s; height: 40%; }
+.wave-bar.bar-2 { animation-delay: 0.3s; height: 85%; }
+.wave-bar.bar-3 { animation-delay: 0.2s; height: 60%; }
+
+@keyframes audioWave {
+  0% { height: 25%; }
+  50% { height: 100%; }
+  100% { height: 35%; }
+}
+
+.audio-flyout {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  width: 290px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.09);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.audio-flyout.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.audio-flyout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.audio-flyout-tag {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.audio-status-pill {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 2px;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.audio-status-pill.playing {
+  background: var(--text-primary);
+  color: #FFFFFF;
+}
+
+.audio-now-playing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.audio-track-title {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.audio-track-composer {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.audio-flyout-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.audio-action-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.65rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.audio-action-btn:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-subtle);
+}
+
+.audio-action-btn.primary {
+  background: var(--text-primary);
+  color: #FFFFFF;
+  border-color: var(--text-primary);
+}
+
+.audio-action-btn.primary:hover {
+  background: #333333;
+}
+
+.audio-track-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.audio-menu-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-light);
+}
+
+.audio-track-select {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: #FFFFFF;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+}
+
+.audio-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.volume-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  min-width: 44px;
+}
+
+.audio-volume-slider {
+  flex-grow: 1;
+  height: 4px;
+  accent-color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Full-Screen Exhibition Screensaver Mode
+   ========================================================================== */
+.screensaver-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0B0B0B;
+  color: #FFFFFF;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  overflow: hidden;
+  user-select: none;
+}
+
+.screensaver-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.screensaver-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 3020;
+  background: linear-gradient(to bottom, rgba(11, 11, 11, 0.85) 0%, rgba(11, 11, 11, 0) 100%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.screensaver-modal.controls-hidden .screensaver-topbar {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.screensaver-modal.controls-hidden .screensaver-card {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.screensaver-modal.controls-hidden .screensaver-nav-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.screensaver-modal.controls-hidden .screensaver-hint {
+  opacity: 0;
+}
+
+.screensaver-status {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.screensaver-badge {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.screensaver-counter {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-sm);
+}
+
+.screensaver-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.screensaver-duration-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+}
+
+.duration-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+}
+
+.duration-select {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+}
+
+.duration-select option {
+  background: #181818;
+  color: #FFFFFF;
+}
+
+.screensaver-action-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-sm);
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.screensaver-action-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.screensaver-close-btn {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 1.8rem;
+  line-height: 1;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.screensaver-close-btn:hover {
+  opacity: 1;
+}
+
+.screensaver-progress-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: 3030;
+}
+
+.screensaver-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #FFFFFF;
+  transition: width 0.1s linear;
+}
+
+.screensaver-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.screensaver-slide-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4.5rem 3rem 6rem;
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.screensaver-slide-layer.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.screensaver-img {
+  max-width: 90vw;
+  max-height: 84vh;
+  object-fit: contain;
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  background: #000000;
+  transition: transform 14s cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+.screensaver-slide-layer.active .screensaver-img {
+  transform: scale(1.025);
+}
+
+.screensaver-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(18, 18, 18, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3020;
+  transition: opacity 0.3s ease, background 0.2s ease, transform 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.screensaver-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.screensaver-nav-btn.prev { left: 2rem; }
+.screensaver-nav-btn.next { right: 2rem; }
+
+.screensaver-card {
+  position: absolute;
+  bottom: 2rem;
+  left: 2.5rem;
+  max-width: 440px;
+  background: rgba(15, 15, 15, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.4rem;
+  color: #FFFFFF;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  z-index: 3020;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.screensaver-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.screensaver-artist-thumb-wrap {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #222222;
+}
+
+.screensaver-artist-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.screensaver-card-meta-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.screensaver-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.screensaver-card-subline {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.card-dot {
+  opacity: 0.5;
+}
+
+.screensaver-card-artist {
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.screensaver-card-era {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+}
+
+.screensaver-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.75rem;
+  gap: 0.75rem;
+}
+
+.screensaver-card-provenance {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.screensaver-card-story-btn {
+  background: #FFFFFF;
+  color: #000000;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.screensaver-card-story-btn:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.screensaver-hint {
+  position: absolute;
+  bottom: 2rem;
+  right: 2.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  z-index: 3020;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .screensaver-topbar {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+  }
+  .screensaver-badge {
+    display: none;
+  }
+  .screensaver-controls {
+    gap: 0.4rem;
+  }
+  .duration-label {
+    display: none;
+  }
+  .screensaver-duration-wrap {
+    padding: 0.2rem 0.4rem;
+  }
+  .screensaver-action-btn {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.68rem;
+  }
+  .screensaver-card {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: none;
+    padding: 0.85rem 1rem;
+  }
+  .screensaver-nav-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+  .screensaver-nav-btn.prev { left: 0.75rem; }
+  .screensaver-nav-btn.next { right: 0.75rem; }
+  .screensaver-slide-layer {
+    padding: 3.5rem 1rem 6rem;
+  }
+  .screensaver-img {
+    max-height: 72vh;
+    max-width: 95vw;
+  }
+  .screensaver-hint {
+    display: none;
+  }
+  .audio-flyout {
+    right: -2rem;
+    width: 260px;
+  }
+}
+
+@media (max-width: 480px) {
+  .audio-btn .audio-btn-text {
+    display: none;
+  }
+  .audio-btn {
+    padding: 0.35rem 0.5rem;
+  }
+}
+
+/* ==========================================================================
    Print Optimization
    ========================================================================== */
 @media print {

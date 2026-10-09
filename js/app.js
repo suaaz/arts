@@ -1,11 +1,14 @@
 /**
  * ARTs - Masterpieces & Stories Controller
- * Minimalistic museum presentation, live search, era filtering,
- * progressive loading for 100+ masterworks, and high-definition lightbox.
+ * Features:
+ * 1. Minimalist museum presentation (Stories monograph & Wall exhibition grid)
+ * 2. High-definition zoom lightbox with multi-level magnification & touch swipe
+ * 3. Classical background music player (Beethoven, Satie, Debussy, Chopin) with mute toggle
+ * 4. Full-screen exhibition screensaver slideshow with configurable transitions, countdown bar, and informative floating card
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // State
+  // Application State
   let currentFilter = "all";
   let searchQuery = "";
   let currentView = "stream"; // 'stream' (Story View) or 'grid' (Gallery Wall)
@@ -16,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const STREAM_BATCH_SIZE = 12;
   let streamVisibleCount = STREAM_BATCH_SIZE;
 
-  // DOM Elements
+  // DOM Elements - General
   const exhibitionStream = document.getElementById("exhibitionStream");
   const galleryGrid = document.getElementById("galleryGrid");
   const emptyState = document.getElementById("emptyState");
@@ -32,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadAllBtn = document.getElementById("loadAllBtn");
   const streamStatusText = document.getElementById("streamStatusText");
 
-  // Lightbox Elements
+  // DOM Elements - Lightbox
   const lightboxModal = document.getElementById("lightboxModal");
   const lightboxImg = document.getElementById("lightboxImg");
   const lightboxTitle = document.getElementById("lightboxTitle");
@@ -42,18 +45,379 @@ document.addEventListener("DOMContentLoaded", () => {
   const lightboxNext = document.getElementById("lightboxNext");
   const lightboxZoomToggle = document.getElementById("lightboxZoomToggle");
   const lightboxFullResLink = document.getElementById("lightboxFullResLink");
-  const lightboxImgContainer = document.querySelector(".lightbox-image-container");
 
-  // Initialize
+  // DOM Elements - Audio Player
+  const audioWidget = document.getElementById("audioWidget");
+  const audioToggleBtn = document.getElementById("audioToggleBtn");
+  const audioSpeakerIcon = document.getElementById("audioSpeakerIcon");
+  const audioMutedIcon = document.getElementById("audioMutedIcon");
+  const audioBtnText = document.getElementById("audioBtnText");
+  const audioFlyout = document.getElementById("audioFlyout");
+  const audioStatusPill = document.getElementById("audioStatusPill");
+  const audioTrackTitle = document.getElementById("audioTrackTitle");
+  const audioTrackComposer = document.getElementById("audioTrackComposer");
+  const audioFlyoutPlayBtn = document.getElementById("audioFlyoutPlayBtn");
+  const audioFlyoutNextBtn = document.getElementById("audioFlyoutNextBtn");
+  const audioTrackSelect = document.getElementById("audioTrackSelect");
+  const audioVolumeSlider = document.getElementById("audioVolumeSlider");
+
+  // DOM Elements - Screensaver
+  const screensaverModal = document.getElementById("screensaverModal");
+  const screensaverCounter = document.getElementById("screensaverCounter");
+  const screensaverDurationSelect = document.getElementById("screensaverDurationSelect");
+  const screensaverPlayPauseBtn = document.getElementById("screensaverPlayPauseBtn");
+  const screensaverPlayPauseIcon = document.getElementById("screensaverPlayPauseIcon");
+  const screensaverPlayPauseText = document.getElementById("screensaverPlayPauseText");
+  const screensaverMusicBtn = document.getElementById("screensaverMusicBtn");
+  const screensaverMusicText = document.getElementById("screensaverMusicText");
+  const screensaverCloseBtn = document.getElementById("screensaverCloseBtn");
+  const screensaverProgressBar = document.getElementById("screensaverProgressBar");
+  const screensaverPrevBtn = document.getElementById("screensaverPrevBtn");
+  const screensaverNextBtn = document.getElementById("screensaverNextBtn");
+  const screensaverLayerA = document.getElementById("screensaverLayerA");
+  const screensaverLayerB = document.getElementById("screensaverLayerB");
+  const screensaverImgA = document.getElementById("screensaverImgA");
+  const screensaverImgB = document.getElementById("screensaverImgB");
+  const screensaverCard = document.getElementById("screensaverCard");
+  const screensaverCardArtistImg = document.getElementById("screensaverCardArtistImg");
+  const screensaverCardTitle = document.getElementById("screensaverCardTitle");
+  const screensaverCardArtist = document.getElementById("screensaverCardArtist");
+  const screensaverCardYear = document.getElementById("screensaverCardYear");
+  const screensaverCardEra = document.getElementById("screensaverCardEra");
+  const screensaverCardMedium = document.getElementById("screensaverCardMedium");
+  const screensaverCardLocation = document.getElementById("screensaverCardLocation");
+  const screensaverCardStoryBtn = document.getElementById("screensaverCardStoryBtn");
+
+  /* ==========================================================================
+     Classical Background Music Player State & Setup
+     ========================================================================== */
+  const CLASSICAL_PLAYLIST = [
+    {
+      title: "Moonlight Sonata (Adagio sostenuto)",
+      composer: "Ludwig van Beethoven",
+      year: "1801",
+      url: "https://ia803202.us.archive.org/3/items/MoonlightSonata_755/Beethoven-MoonlightSonata.mp3"
+    },
+    {
+      title: "Gymnopédie No. 1",
+      composer: "Erik Satie",
+      year: "1888",
+      url: "https://archive.org/download/GymnopedieNo.1/Gymnopedie%20No.1.mp3"
+    },
+    {
+      title: "Clair de Lune",
+      composer: "Claude Debussy",
+      year: "1905",
+      url: "https://archive.org/download/ClairDeLunedebussy/2009-03-30-clairdelune.mp3"
+    },
+    {
+      title: "Nocturne in E-flat major, Op. 9 No. 2",
+      composer: "Frédéric Chopin",
+      year: "1832",
+      url: "https://archive.org/download/Chopin-NocturneOp.9No.2/20120420_Chopin_Nocturne_op9-2_amplified.mp3"
+    }
+  ];
+
+  let currentTrackIndex = 0;
+  let isAudioPlaying = false;
+  let audioVolume = 0.55;
+  const audioObj = new Audio();
+  audioObj.preload = "none";
+  audioObj.volume = audioVolume;
+
+  // Restore saved volume if any
+  try {
+    const savedVol = localStorage.getItem("arts_volume");
+    if (savedVol !== null) {
+      audioVolume = parseFloat(savedVol);
+      audioObj.volume = audioVolume;
+      if (audioVolumeSlider) audioVolumeSlider.value = String(audioVolume);
+    }
+  } catch(e) {}
+
+  function setTrack(index, autoPlay = true) {
+    currentTrackIndex = (index + CLASSICAL_PLAYLIST.length) % CLASSICAL_PLAYLIST.length;
+    const track = CLASSICAL_PLAYLIST[currentTrackIndex];
+    audioObj.src = track.url;
+    
+    if (audioTrackTitle) audioTrackTitle.textContent = track.title;
+    if (audioTrackComposer) audioTrackComposer.textContent = `${track.composer} \u2022 ${track.year}`;
+    if (audioTrackSelect) audioTrackSelect.value = String(currentTrackIndex);
+
+    if (autoPlay) {
+      playAudio();
+    }
+  }
+
+  function playAudio() {
+    if (!audioObj.src) {
+      setTrack(currentTrackIndex, false);
+    }
+    audioObj.play().then(() => {
+      isAudioPlaying = true;
+      updateAudioUI();
+    }).catch(err => {
+      console.warn("Audio autoplay blocked or network error:", err);
+      isAudioPlaying = false;
+      updateAudioUI();
+    });
+  }
+
+  function pauseAudio() {
+    audioObj.pause();
+    isAudioPlaying = false;
+    updateAudioUI();
+  }
+
+  function toggleAudio() {
+    if (isAudioPlaying) {
+      pauseAudio();
+    } else {
+      playAudio();
+    }
+  }
+
+  function nextTrack() {
+    setTrack(currentTrackIndex + 1, true);
+  }
+
+  function updateAudioUI() {
+    if (audioToggleBtn) {
+      audioToggleBtn.classList.toggle("playing", isAudioPlaying);
+    }
+    if (audioSpeakerIcon && audioMutedIcon) {
+      audioSpeakerIcon.style.display = isAudioPlaying ? "inline-block" : "none";
+      audioMutedIcon.style.display = isAudioPlaying ? "none" : "inline-block";
+    }
+    if (audioBtnText) {
+      audioBtnText.textContent = isAudioPlaying ? "Mute" : "Sound";
+    }
+    if (audioStatusPill) {
+      audioStatusPill.textContent = isAudioPlaying ? "Playing" : "Paused";
+      audioStatusPill.classList.toggle("playing", isAudioPlaying);
+    }
+    if (audioFlyoutPlayBtn) {
+      audioFlyoutPlayBtn.innerHTML = isAudioPlaying ? "&#10074;&#10074; Pause Music" : "&#9654; Play Music";
+    }
+    if (screensaverMusicBtn) {
+      screensaverMusicBtn.classList.toggle("active", isAudioPlaying);
+    }
+    if (screensaverMusicText) {
+      screensaverMusicText.textContent = isAudioPlaying ? "Mute" : "Music";
+    }
+  }
+
+  // Audio Object events
+  audioObj.addEventListener("ended", () => {
+    nextTrack();
+  });
+
+  audioObj.addEventListener("play", () => {
+    isAudioPlaying = true;
+    updateAudioUI();
+  });
+
+  audioObj.addEventListener("pause", () => {
+    isAudioPlaying = false;
+    updateAudioUI();
+  });
+
+  audioObj.addEventListener("error", () => {
+    console.warn("Audio track playback error, skipping to next piece...");
+    setTimeout(() => {
+      nextTrack();
+    }, 1200);
+  });
+
+  // Pre-seed initial track info in UI
+  setTrack(0, false);
+
+  /* ==========================================================================
+     Full-Screen Exhibition Screensaver Mode (Slideshow with Crossfade)
+     ========================================================================== */
+  let isScreensaverActive = false;
+  let isScreensaverPaused = false;
+  let screensaverSlideIndex = 0;
+  let screensaverDuration = 12000; // default 12 seconds
+  let screensaverSlideTimer = null;
+  let screensaverProgressTimer = null;
+  let screensaverStartTime = 0;
+  let screensaverIdleTimeout = null;
+  let screensaverCurrentLayer = "A"; // 'A' or 'B'
+
+  function openScreensaver(startIndex = 0) {
+    const artworks = getFilteredArtworks();
+    if (artworks.length === 0) return;
+
+    isScreensaverActive = true;
+    isScreensaverPaused = false;
+    screensaverSlideIndex = startIndex >= 0 && startIndex < artworks.length ? startIndex : 0;
+    
+    if (screensaverModal) {
+      screensaverModal.classList.add("active");
+      screensaverModal.classList.remove("controls-hidden");
+    }
+    document.body.style.overflow = "hidden";
+
+    if (screensaverDurationSelect) {
+      screensaverDuration = parseInt(screensaverDurationSelect.value, 10) || 12000;
+    }
+
+    if (screensaverPlayPauseIcon) screensaverPlayPauseIcon.innerHTML = "&#10074;&#10074;";
+    if (screensaverPlayPauseText) screensaverPlayPauseText.textContent = "Pause";
+
+    renderScreensaverSlide(screensaverSlideIndex, true);
+    startScreensaverProgress();
+    resetScreensaverIdleTimer();
+  }
+
+  function closeScreensaver() {
+    isScreensaverActive = false;
+    clearTimeout(screensaverSlideTimer);
+    clearInterval(screensaverProgressTimer);
+    clearTimeout(screensaverIdleTimeout);
+    
+    if (screensaverModal) {
+      screensaverModal.classList.remove("active");
+      screensaverModal.classList.remove("controls-hidden");
+    }
+    document.body.style.overflow = "";
+  }
+
+  function renderScreensaverSlide(index, isInitial = false) {
+    const artworks = getFilteredArtworks();
+    if (artworks.length === 0) return;
+
+    screensaverSlideIndex = (index + artworks.length) % artworks.length;
+    const art = artworks[screensaverSlideIndex];
+
+    const targetLayer = isInitial ? "A" : (screensaverCurrentLayer === "A" ? "B" : "A");
+    const targetImg = targetLayer === "A" ? screensaverImgA : screensaverImgB;
+    const targetContainer = targetLayer === "A" ? screensaverLayerA : screensaverLayerB;
+    const otherContainer = targetLayer === "A" ? screensaverLayerB : screensaverLayerA;
+
+    if (targetImg) {
+      targetImg.src = art.image;
+      targetImg.alt = `${art.title} by ${art.artist.name}`;
+      targetImg.onerror = () => {
+        targetImg.src = art.imageFallback;
+      };
+    }
+
+    if (targetContainer) targetContainer.classList.add("active");
+    if (otherContainer && !isInitial) otherContainer.classList.remove("active");
+    screensaverCurrentLayer = targetLayer;
+
+    // Update Counter
+    if (screensaverCounter) {
+      screensaverCounter.textContent = `${screensaverSlideIndex + 1} of ${artworks.length}`;
+    }
+
+    // Update Floating Info Card
+    if (screensaverCardTitle) screensaverCardTitle.textContent = art.title;
+    if (screensaverCardArtist) screensaverCardArtist.textContent = art.artist.name;
+    if (screensaverCardYear) screensaverCardYear.textContent = art.year;
+    if (screensaverCardEra) screensaverCardEra.textContent = art.era;
+    if (screensaverCardMedium) screensaverCardMedium.textContent = art.medium;
+    if (screensaverCardLocation) screensaverCardLocation.textContent = art.location;
+    if (screensaverCardArtistImg) {
+      screensaverCardArtistImg.src = art.artist.portrait;
+      screensaverCardArtistImg.alt = art.artist.name;
+    }
+
+    if (screensaverCardStoryBtn) {
+      screensaverCardStoryBtn.onclick = () => {
+        closeScreensaver();
+        switchView("stream");
+        setTimeout(() => {
+          const el = document.getElementById(`artwork-${art.id}`);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 150);
+      };
+    }
+
+    // Reset countdown progress
+    if (!isScreensaverPaused) {
+      startScreensaverProgress();
+    }
+  }
+
+  function startScreensaverProgress() {
+    clearTimeout(screensaverSlideTimer);
+    clearInterval(screensaverProgressTimer);
+
+    if (isScreensaverPaused) return;
+
+    screensaverStartTime = Date.now();
+    if (screensaverProgressBar) {
+      screensaverProgressBar.style.width = "0%";
+    }
+
+    screensaverProgressTimer = setInterval(() => {
+      if (isScreensaverPaused) return;
+      const elapsed = Date.now() - screensaverStartTime;
+      const pct = Math.min((elapsed / screensaverDuration) * 100, 100);
+      if (screensaverProgressBar) {
+        screensaverProgressBar.style.width = `${pct}%`;
+      }
+      if (elapsed >= screensaverDuration) {
+        clearInterval(screensaverProgressTimer);
+      }
+    }, 50);
+
+    screensaverSlideTimer = setTimeout(() => {
+      if (!isScreensaverPaused) {
+        renderScreensaverSlide(screensaverSlideIndex + 1);
+      }
+    }, screensaverDuration);
+  }
+
+  function toggleScreensaverPlayPause() {
+    isScreensaverPaused = !isScreensaverPaused;
+    if (screensaverPlayPauseIcon) {
+      screensaverPlayPauseIcon.innerHTML = isScreensaverPaused ? "&#9654;" : "&#10074;&#10074;";
+    }
+    if (screensaverPlayPauseText) {
+      screensaverPlayPauseText.textContent = isScreensaverPaused ? "Play" : "Pause";
+    }
+
+    if (isScreensaverPaused) {
+      clearTimeout(screensaverSlideTimer);
+      clearInterval(screensaverProgressTimer);
+    } else {
+      startScreensaverProgress();
+    }
+  }
+
+  function nextScreensaverSlide() {
+    renderScreensaverSlide(screensaverSlideIndex + 1);
+  }
+
+  function prevScreensaverSlide() {
+    renderScreensaverSlide(screensaverSlideIndex - 1);
+  }
+
+  function resetScreensaverIdleTimer() {
+    if (!screensaverModal) return;
+    screensaverModal.classList.remove("controls-hidden");
+    clearTimeout(screensaverIdleTimeout);
+    screensaverIdleTimeout = setTimeout(() => {
+      if (isScreensaverActive && !isScreensaverPaused) {
+        screensaverModal.classList.add("controls-hidden");
+      }
+    }, 3500);
+  }
+
+  /* ==========================================================================
+     Main Gallery Controller (Filter, Search, Views)
+     ========================================================================== */
   renderGallery();
   setupEventListeners();
 
-  /**
-   * Filter & Search Data
-   */
   function getFilteredArtworks() {
     return ARTWORKS_DATA.filter((art) => {
-      // Era filter matching
       let matchesEra = currentFilter === "all";
       if (!matchesEra) {
         const filterLower = currentFilter.toLowerCase();
@@ -62,7 +426,6 @@ document.addEventListener("DOMContentLoaded", () => {
           art.artist.movement.toLowerCase().includes(filterLower);
       }
 
-      // Search query
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !q ||
@@ -79,13 +442,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /**
-   * Render Masterpiece Collection
-   */
   function renderGallery() {
     const artworks = getFilteredArtworks();
 
-    // Update Counter
     if (collectionCounter) {
       collectionCounter.textContent = `${artworks.length} Masterpieces`;
     }
@@ -112,12 +471,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /**
-   * Render Story / Monograph Stream View (Progressive Batch Loading)
-   */
   function renderStreamView(artworks) {
     exhibitionStream.innerHTML = "";
-
     const visibleArtworks = artworks.slice(0, streamVisibleCount);
 
     visibleArtworks.forEach((art, index) => {
@@ -125,7 +480,6 @@ document.addEventListener("DOMContentLoaded", () => {
       article.className = "artwork-article";
       article.id = `artwork-${art.id}`;
 
-      // Format story paragraphs
       const storyParagraphs = art.story
         .split("\n\n")
         .map((p) => `<p>${escapeHtml(p)}</p>`)
@@ -239,52 +593,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Handle "Load More" controls for story mode
     if (loadMoreContainer) {
-      if (visibleArtworks.length < artworks.length) {
-        loadMoreContainer.style.display = "flex";
-        if (streamStatusText) {
-          streamStatusText.textContent = `Displaying ${visibleArtworks.length} of ${artworks.length} Masterpieces`;
-        }
-      } else {
+      if (artworks.length <= STREAM_BATCH_SIZE) {
         loadMoreContainer.style.display = "none";
+      } else {
+        loadMoreContainer.style.display = "flex";
+        const currentCount = Math.min(streamVisibleCount, artworks.length);
+        if (streamStatusText) {
+          streamStatusText.textContent = `Displaying ${currentCount} of ${artworks.length} Masterpieces`;
+        }
+
+        if (currentCount >= artworks.length) {
+          if (loadMoreBtn) loadMoreBtn.style.display = "none";
+          if (loadAllBtn) loadAllBtn.style.display = "none";
+        } else {
+          if (loadMoreBtn) loadMoreBtn.style.display = "inline-block";
+          if (loadAllBtn) loadAllBtn.style.display = "inline-block";
+        }
       }
     }
 
-    // Attach click listeners to images for lightbox
-    document.querySelectorAll(".painting-frame-wrapper").forEach((el) => {
-      el.addEventListener("click", () => {
-        const id = el.getAttribute("data-art-id");
-        openLightboxById(id);
+    // Attach click-to-lightbox events
+    exhibitionStream.querySelectorAll(".painting-frame-wrapper").forEach((frame) => {
+      frame.addEventListener("click", () => {
+        openLightboxById(frame.getAttribute("data-art-id"));
       });
     });
   }
 
-  /**
-   * Render Gallery Wall (Grid) View - Displays all items
-   */
   function renderGridView(artworks) {
     galleryGrid.innerHTML = "";
 
-    artworks.forEach((art, index) => {
+    artworks.forEach((art) => {
       const card = document.createElement("div");
       card.className = "grid-card";
 
-      const excerpt = art.story.slice(0, 140).trim() + "...";
+      const excerpt = art.story.length > 140 
+        ? `${art.story.substring(0, 140).trim()}...` 
+        : art.story;
 
       card.innerHTML = `
-        <div class="grid-image-box" data-art-id="${art.id}" title="Click to view full screen">
+        <div class="grid-image-box" data-art-id="${art.id}" title="Click to view full painting">
           <img 
             class="grid-image" 
             src="${art.image}" 
             alt="${escapeHtml(art.title)}" 
-            loading="lazy"
+            loading="lazy" 
             decoding="async"
             onerror="this.onerror=null; this.src='${art.imageFallback}';"
           />
         </div>
         <div class="grid-card-body">
           <div class="grid-card-meta">
-            <span>No. ${index + 1}</span>
             <span>${escapeHtml(art.year)}</span>
+            <span>${escapeHtml(art.era)}</span>
           </div>
           <h3 class="grid-card-title">${escapeHtml(art.title)}</h3>
           <div class="grid-card-artist">
@@ -296,9 +657,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <button class="grid-read-btn" data-jump-id="${art.id}">
               Read Story &rarr;
             </button>
-            <button class="view-btn" data-art-id="${art.id}" style="padding: 0.25rem 0.6rem; font-size: 0.68rem;">
-              Enlarge
-            </button>
           </div>
         </div>
       `;
@@ -306,11 +664,9 @@ document.addEventListener("DOMContentLoaded", () => {
       galleryGrid.appendChild(card);
     });
 
-    // Attach click events
-    galleryGrid.querySelectorAll(".grid-image-box, button[data-art-id]").forEach((el) => {
-      el.addEventListener("click", () => {
-        const id = el.getAttribute("data-art-id");
-        openLightboxById(id);
+    galleryGrid.querySelectorAll(".grid-image-box").forEach((box) => {
+      box.addEventListener("click", () => {
+        openLightboxById(box.getAttribute("data-art-id"));
       });
     });
 
@@ -318,15 +674,6 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.addEventListener("click", () => {
         const id = btn.getAttribute("data-jump-id");
         switchView("stream");
-        
-        // Ensure the item is within streamVisibleCount
-        const filtered = getFilteredArtworks();
-        const targetIndex = filtered.findIndex((item) => item.id === id);
-        if (targetIndex >= streamVisibleCount) {
-          streamVisibleCount = targetIndex + 1;
-          renderGallery();
-        }
-
         setTimeout(() => {
           const target = document.getElementById(`artwork-${id}`);
           if (target) {
@@ -337,10 +684,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /**
-   * Switch View Mode
-   */
   function switchView(view) {
+    if (view === "screensaver") {
+      openScreensaver(0);
+      return;
+    }
     currentView = view;
     viewButtons.forEach((btn) => {
       btn.classList.toggle("active", btn.getAttribute("data-view") === view);
@@ -348,9 +696,9 @@ document.addEventListener("DOMContentLoaded", () => {
     renderGallery();
   }
 
-  /**
-   * Lightbox Modal Functions with High-Definition Pan & Zoom
-   */
+  /* ==========================================================================
+     Lightbox Inspector Functions
+     ========================================================================== */
   function openLightboxById(id) {
     const filtered = getFilteredArtworks();
     const index = filtered.findIndex((item) => item.id === id);
@@ -377,7 +725,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     lightboxTitle.textContent = `${art.title} (${art.year})`;
-    lightboxCaption.textContent = `${art.artist.name} — ${art.medium} — ${art.location}`;
+    lightboxCaption.textContent = `${art.artist.name} \u2014 ${art.medium} \u2014 ${art.location}`;
 
     if (lightboxFullResLink) {
       lightboxFullResLink.href = art.image;
@@ -436,15 +784,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /**
-   * Event Listeners
-   */
+  /* ==========================================================================
+     Event Listeners Attachment
+     ========================================================================== */
   function setupEventListeners() {
     // Search input
     if (searchInput) {
       searchInput.addEventListener("input", (e) => {
         searchQuery = e.target.value;
-        streamVisibleCount = STREAM_BATCH_SIZE; // reset pagination on new search
+        streamVisibleCount = STREAM_BATCH_SIZE;
         if (searchClear) {
           searchClear.classList.toggle("visible", searchQuery.length > 0);
         }
@@ -485,7 +833,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filterButtons.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
         currentFilter = btn.getAttribute("data-filter");
-        streamVisibleCount = STREAM_BATCH_SIZE; // reset pagination on filter change
+        streamVisibleCount = STREAM_BATCH_SIZE;
         renderGallery();
       });
     });
@@ -550,7 +898,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (e.changedTouches.length === 1) {
             touchEndX = e.changedTouches[0].clientX;
             touchEndY = e.changedTouches[0].clientY;
-            // Only trigger swipe navigation if user is not zoomed into painting
             if (zoomLevel === 1) {
               const diffX = touchEndX - touchStartX;
               const diffY = touchEndY - touchStartY;
@@ -568,12 +915,182 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
 
-    // Keyboard navigation
+    /* ==========================================================================
+       Audio Widget Event Listeners
+       ========================================================================== */
+    if (audioToggleBtn) {
+      audioToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!isAudioPlaying) {
+          playAudio();
+        } else {
+          // Toggle flyout on click if playing
+          if (audioFlyout) {
+            audioFlyout.classList.toggle("active");
+          }
+        }
+      });
+    }
+
+    if (audioFlyoutPlayBtn) {
+      audioFlyoutPlayBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleAudio();
+      });
+    }
+
+    if (audioFlyoutNextBtn) {
+      audioFlyoutNextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        nextTrack();
+      });
+    }
+
+    if (audioTrackSelect) {
+      audioTrackSelect.addEventListener("change", (e) => {
+        setTrack(parseInt(e.target.value, 10), true);
+      });
+    }
+
+    if (audioVolumeSlider) {
+      audioVolumeSlider.addEventListener("input", (e) => {
+        audioVolume = parseFloat(e.target.value);
+        audioObj.volume = audioVolume;
+        try {
+          localStorage.setItem("arts_volume", String(audioVolume));
+        } catch(err) {}
+      });
+    }
+
+    // Close audio flyout when clicking outside
+    document.addEventListener("click", (e) => {
+      if (audioFlyout && audioWidget && !audioWidget.contains(e.target)) {
+        audioFlyout.classList.remove("active");
+      }
+    });
+
+    /* ==========================================================================
+       Screensaver Event Listeners
+       ========================================================================== */
+    if (screensaverCloseBtn) {
+      screensaverCloseBtn.addEventListener("click", closeScreensaver);
+    }
+
+    if (screensaverPlayPauseBtn) {
+      screensaverPlayPauseBtn.addEventListener("click", toggleScreensaverPlayPause);
+    }
+
+    if (screensaverNextBtn) {
+      screensaverNextBtn.addEventListener("click", () => {
+        nextScreensaverSlide();
+        resetScreensaverIdleTimer();
+      });
+    }
+
+    if (screensaverPrevBtn) {
+      screensaverPrevBtn.addEventListener("click", () => {
+        prevScreensaverSlide();
+        resetScreensaverIdleTimer();
+      });
+    }
+
+    if (screensaverDurationSelect) {
+      screensaverDurationSelect.addEventListener("change", (e) => {
+        screensaverDuration = parseInt(e.target.value, 10) || 12000;
+        if (!isScreensaverPaused) {
+          startScreensaverProgress();
+        }
+      });
+    }
+
+    if (screensaverMusicBtn) {
+      screensaverMusicBtn.addEventListener("click", () => {
+        toggleAudio();
+      });
+    }
+
+    if (screensaverModal) {
+      screensaverModal.addEventListener("mousemove", resetScreensaverIdleTimer);
+      screensaverModal.addEventListener("touchstart", resetScreensaverIdleTimer, { passive: true });
+
+      // Swipe navigation inside Screensaver
+      let ssTouchStartX = 0;
+      let ssTouchStartY = 0;
+      let ssTouchEndX = 0;
+      let ssTouchEndY = 0;
+
+      screensaverModal.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+          ssTouchStartX = e.touches[0].clientX;
+          ssTouchStartY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
+      screensaverModal.addEventListener("touchend", (e) => {
+        if (e.changedTouches.length === 1) {
+          ssTouchEndX = e.changedTouches[0].clientX;
+          ssTouchEndY = e.changedTouches[0].clientY;
+          const diffX = ssTouchEndX - ssTouchStartX;
+          const diffY = ssTouchEndY - ssTouchStartY;
+          if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+            if (diffX < 0) {
+              nextScreensaverSlide();
+            } else {
+              prevScreensaverSlide();
+            }
+          }
+        }
+      }, { passive: true });
+    }
+
+    /* ==========================================================================
+       Global Keyboard Navigation
+       ========================================================================== */
     window.addEventListener("keydown", (e) => {
-      if (!lightboxModal.classList.contains("active")) return;
-      if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowRight") nextLightbox();
-      if (e.key === "ArrowLeft") prevLightbox();
+      // Screensaver active shortcuts
+      if (isScreensaverActive) {
+        if (e.key === "Escape") {
+          closeScreensaver();
+          return;
+        }
+        if (e.key === " " || e.code === "Space") {
+          e.preventDefault();
+          toggleScreensaverPlayPause();
+          return;
+        }
+        if (e.key === "ArrowRight") {
+          nextScreensaverSlide();
+          return;
+        }
+        if (e.key === "ArrowLeft") {
+          prevScreensaverSlide();
+          return;
+        }
+        if (e.key === "m" || e.key === "M") {
+          toggleAudio();
+          return;
+        }
+      }
+
+      // Lightbox active shortcuts
+      if (lightboxModal && lightboxModal.classList.contains("active")) {
+        if (e.key === "Escape") closeLightbox();
+        if (e.key === "ArrowRight") nextLightbox();
+        if (e.key === "ArrowLeft") prevLightbox();
+        return;
+      }
+
+      // Global hotkey 'S' to launch screensaver if not typing in search
+      if ((e.key === "s" || e.key === "S") && document.activeElement !== searchInput) {
+        if (!isScreensaverActive) {
+          openScreensaver(0);
+        }
+      }
+
+      // Global hotkey 'M' to toggle music
+      if ((e.key === "m" || e.key === "M") && document.activeElement !== searchInput) {
+        toggleAudio();
+      }
     });
 
     // Scroll Progress & Back to Top

@@ -50,8 +50,67 @@
             <span class="view-text-desktop">Wall (100+)</span>
             <span class="view-text-mobile">Wall</span>
           </button>
+          <button class="view-btn" data-view="screensaver" id="screensaverTriggerBtn" title="Launch Full-Screen Exhibition Screensaver (Key: S)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            <span class="view-text-desktop">Screensaver</span>
+            <span class="view-text-mobile">Slides</span>
+          </button>
         </div>
-      </div>
+
+        <!-- Classical Background Tune Widget -->
+        <div class="audio-widget" id="audioWidget">
+          <button id="audioToggleBtn" class="audio-btn" title="Toggle Beethoven & Classical Background Music" aria-label="Toggle background music">
+            <span class="audio-waves" id="audioWaves" aria-hidden="true">
+              <span class="wave-bar bar-1"></span>
+              <span class="wave-bar bar-2"></span>
+              <span class="wave-bar bar-3"></span>
+            </span>
+            <svg class="audio-icon audio-speaker-icon" id="audioSpeakerIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <svg class="audio-icon audio-muted-icon" id="audioMutedIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+            <span class="audio-btn-text" id="audioBtnText">Sound</span>
+          </button>
+
+          <!-- Dropdown Flyout Player -->
+          <div class="audio-flyout" id="audioFlyout">
+            <div class="audio-flyout-header">
+              <span class="audio-flyout-tag">Classical Suite</span>
+              <span class="audio-status-pill" id="audioStatusPill">Ready</span>
+            </div>
+            <div class="audio-now-playing">
+              <div class="audio-track-title" id="audioTrackTitle">Moonlight Sonata (Adagio sostenuto)</div>
+              <div class="audio-track-composer" id="audioTrackComposer">Ludwig van Beethoven &bull; 1801</div>
+            </div>
+            <div class="audio-flyout-actions">
+              <button id="audioFlyoutPlayBtn" class="audio-action-btn primary" title="Play or Pause">&#9654; Play Music</button>
+              <button id="audioFlyoutNextBtn" class="audio-action-btn" title="Next Classical Piece">Next Piece &rarr;</button>
+            </div>
+            <div class="audio-track-menu">
+              <label for="audioTrackSelect" class="audio-menu-label">Select Classical Piece:</label>
+              <select id="audioTrackSelect" class="audio-track-select">
+                <option value="0">Beethoven — Moonlight Sonata</option>
+                <option value="1">Satie — Gymnopédie No. 1</option>
+                <option value="2">Debussy — Clair de Lune</option>
+                <option value="3">Chopin — Nocturne Op. 9 No. 2</option>
+              </select>
+            </div>
+            <div class="audio-volume-row">
+              <span class="volume-label">Volume</span>
+              <input type="range" id="audioVolumeSlider" class="audio-volume-slider" min="0" max="1" step="0.05" value="0.5" aria-label="Volume slider" />
+            </div>
+          </div>
+        </div>
     </div>
   </header>
 
@@ -160,6 +219,100 @@
         <img id="lightboxImg" class="lightbox-image" src="" alt="Masterpiece" />
       </div>
       <button id="lightboxNext" class="lightbox-nav-btn lightbox-next" title="Next artwork (&rarr;)" aria-label="Next artwork">&#8594;</button>
+    </div>
+  </div>
+
+  <!-- Full-Screen Exhibition Screensaver Mode -->
+  <div id="screensaverModal" class="screensaver-modal" role="dialog" aria-modal="true" aria-label="Exhibition Screensaver Slideshow">
+    <!-- Top Bar: Status, Duration, Controls, Close -->
+    <div class="screensaver-topbar" id="screensaverTopbar">
+      <div class="screensaver-status">
+        <span class="screensaver-badge">Exhibition Screensaver</span>
+        <span id="screensaverCounter" class="screensaver-counter">1 of 108</span>
+      </div>
+
+      <div class="screensaver-controls">
+        <!-- Duration Interval Selector -->
+        <div class="screensaver-duration-wrap">
+          <label for="screensaverDurationSelect" class="duration-label">Slide:</label>
+          <select id="screensaverDurationSelect" class="duration-select" aria-label="Slide duration">
+            <option value="5000">5 seconds</option>
+            <option value="8000">8 seconds</option>
+            <option value="12000" selected>12 seconds</option>
+            <option value="20000">20 seconds</option>
+            <option value="30000">30 seconds</option>
+          </select>
+        </div>
+
+        <!-- Play / Pause Slideshow -->
+        <button id="screensaverPlayPauseBtn" class="screensaver-action-btn" title="Pause / Play (Spacebar)">
+          <span id="screensaverPlayPauseIcon">&#10074;&#10074;</span>
+          <span id="screensaverPlayPauseText">Pause</span>
+        </button>
+
+        <!-- Ambient Music Toggle within Screensaver -->
+        <button id="screensaverMusicBtn" class="screensaver-action-btn" title="Toggle background music">
+          <span id="screensaverMusicIcon">&#9835;</span>
+          <span id="screensaverMusicText">Music</span>
+        </button>
+
+        <!-- Exit Screensaver -->
+        <button id="screensaverCloseBtn" class="screensaver-close-btn" title="Exit Screensaver (ESC)" aria-label="Exit Screensaver">&times;</button>
+      </div>
+    </div>
+
+    <!-- Countdown Progress Line for Current Slide -->
+    <div class="screensaver-progress-track">
+      <div id="screensaverProgressBar" class="screensaver-progress-bar"></div>
+    </div>
+
+    <!-- Slideshow Stage with Double-Buffer Crossfade Layers -->
+    <div class="screensaver-stage" id="screensaverStage">
+      <div class="screensaver-slide-layer active" id="screensaverLayerA">
+        <img id="screensaverImgA" class="screensaver-img" src="" alt="Artwork" />
+      </div>
+      <div class="screensaver-slide-layer" id="screensaverLayerB">
+        <img id="screensaverImgB" class="screensaver-img" src="" alt="Artwork" />
+      </div>
+
+      <!-- Arrow Controls -->
+      <button id="screensaverPrevBtn" class="screensaver-nav-btn prev" title="Previous artwork (&larr;)" aria-label="Previous artwork">&#8592;</button>
+      <button id="screensaverNextBtn" class="screensaver-nav-btn next" title="Next artwork (&rarr;)" aria-label="Next artwork">&#8594;</button>
+    </div>
+
+    <!-- Little Information Card on the Image -->
+    <div class="screensaver-card" id="screensaverCard">
+      <div class="screensaver-card-top">
+        <div class="screensaver-artist-thumb-wrap">
+          <img id="screensaverCardArtistImg" class="screensaver-artist-thumb" src="" alt="Artist" />
+        </div>
+        <div class="screensaver-card-meta-main">
+          <h3 id="screensaverCardTitle" class="screensaver-card-title">The Starry Night</h3>
+          <div class="screensaver-card-subline">
+            <span id="screensaverCardArtist" class="screensaver-card-artist">Vincent van Gogh</span>
+            <span class="card-dot">&bull;</span>
+            <span id="screensaverCardYear" class="screensaver-card-year">1889</span>
+            <span class="card-dot">&bull;</span>
+            <span id="screensaverCardEra" class="screensaver-card-era">Post-Impressionism</span>
+          </div>
+        </div>
+      </div>
+      <div class="screensaver-card-bottom">
+        <div class="screensaver-card-provenance">
+          <span id="screensaverCardMedium">Oil on canvas</span> &bull; 
+          <span id="screensaverCardLocation">Museum of Modern Art, New York</span>
+        </div>
+        <button id="screensaverCardStoryBtn" class="screensaver-card-story-btn" title="Open full story for this painting">
+          Read Story &rarr;
+        </button>
+      </div>
+    </div>
+
+    <!-- Keyboard Navigation Hint -->
+    <div class="screensaver-hint" id="screensaverHint">
+      <span>Space: Pause/Play</span> &bull; 
+      <span>&larr; &rarr;: Skip</span> &bull; 
+      <span>ESC: Exit</span>
     </div>
   </div>
 
