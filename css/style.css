@@ -81,6 +81,7 @@ body {
   height: 2px;
   background: transparent;
   z-index: 1000;
+  pointer-events: none;
 }
 
 .progress-bar {
@@ -1173,6 +1174,7 @@ body {
    Minimalist Lightbox Modal (Fully Responsive & Touch-Friendly)
    ========================================================================== */
 .lightbox-modal {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -1182,17 +1184,12 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 2000;
-  display: flex;
   flex-direction: column;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
   overflow: hidden;
 }
 
 .lightbox-modal.active {
-  opacity: 1;
-  pointer-events: auto;
+  display: flex;
 }
 
 .lightbox-header {
@@ -1570,7 +1567,7 @@ body {
 .audio-btn {
   background: transparent;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
   padding: 0.4rem 0.75rem;
   font-family: var(--font-sans);
   font-size: 0.75rem;
@@ -1596,6 +1593,26 @@ body {
   background: var(--text-primary);
   border-color: var(--text-primary);
   color: #FFFFFF;
+}
+
+.audio-menu-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-left: none;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.4rem 0.45rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.audio-menu-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  background: var(--bg-subtle);
 }
 
 .audio-btn.playing .audio-speaker-icon,
@@ -1633,6 +1650,7 @@ body {
 }
 
 .audio-flyout {
+  display: none;
   position: absolute;
   top: calc(100% + 0.6rem);
   right: 0;
@@ -1642,20 +1660,13 @@ body {
   border-radius: var(--radius-md);
   padding: 1.15rem;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.09);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-6px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 1000;
-  display: flex;
   flex-direction: column;
   gap: 0.85rem;
 }
 
 .audio-flyout.active {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
+  display: flex;
 }
 
 .audio-flyout-header {
@@ -1795,6 +1806,7 @@ body {
    Full-Screen Exhibition Screensaver Mode
    ========================================================================== */
 .screensaver-modal {
+  display: none;
   position: fixed;
   inset: 0;
   width: 100vw;
@@ -1802,19 +1814,14 @@ body {
   background: #0B0B0B;
   color: #FFFFFF;
   z-index: 3000;
-  display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease;
   overflow: hidden;
   user-select: none;
 }
 
 .screensaver-modal.active {
-  opacity: 1;
-  pointer-events: auto;
+  display: flex;
 }
 
 .screensaver-topbar {

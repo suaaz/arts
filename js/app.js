@@ -921,13 +921,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (audioToggleBtn) {
       audioToggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (!isAudioPlaying) {
-          playAudio();
-        } else {
-          // Toggle flyout on click if playing
-          if (audioFlyout) {
-            audioFlyout.classList.toggle("active");
-          }
+        toggleAudio();
+      });
+    }
+
+    const audioMenuBtn = document.getElementById("audioMenuBtn");
+    if (audioMenuBtn) {
+      audioMenuBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (audioFlyout) {
+          audioFlyout.classList.toggle("active");
         }
       });
     }
